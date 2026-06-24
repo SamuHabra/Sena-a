@@ -1,0 +1,23 @@
+# ═══════════════════════════════════════════════════════
+#  GIC SE-NA'A — robots.txt
+#  Directives pour les moteurs de recherche (Google, Bing…)
+# ═══════════════════════════════════════════════════════
+
+# Autoriser tous les robots sur le site public
+User-agent: *
+Allow: /
+
+# Bloquer l'indexation de l'interface admin CMS
+Disallow: /admin/
+Disallow: /admin
+
+# Bloquer les fichiers de configuration
+Disallow: /.netlify/
+Disallow: /netlify.toml
+
+# Sitemap — aide Google à trouver toutes les pages
+# Remplacer par votre URL Netlify ou domaine final
+Sitemap: https://gic-senaa.netlify.app/sitemap.xml
+
+# Crawl delay suggéré (en secondes)
+Crawl-delay: 10

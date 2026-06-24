@@ -1,0 +1,94 @@
+# ═══════════════════════════════════════════════════════
+#  GIC SE-NA'A — Configuration Netlify
+#  Phase 2 : Déploiement + Sécurité + CMS
+# ═══════════════════════════════════════════════════════
+
+# ── BUILD ───────────────────────────────────────────────
+[build]
+  publish = "."          # Dossier racine (fichiers statiques)
+  command = ""           # Pas de build (HTML pur)
+
+# ── FORMULAIRES NETLIFY ─────────────────────────────────
+# Actif automatiquement grâce aux attributs data-netlify="true"
+# dans le formulaire HTML. Les soumissions apparaissent dans :
+# Netlify Dashboard → Forms → contact
+
+# ── REDIRECTIONS ────────────────────────────────────────
+[[redirects]]
+  from = "/admin"
+  to   = "/admin/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin/"
+  to   = "/admin/index.html"
+  status = 200
+
+# ── HEADERS DE SÉCURITÉ ─────────────────────────────────
+# Appliqués à toutes les pages
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Anti-clickjacking
+    X-Frame-Options = "SAMEORIGIN"
+
+    # Empêche le navigateur de deviner le type MIME
+    X-Content-Type-Options = "nosniff"
+
+    # Force HTTPS pour 1 an
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+    # Protection XSS navigateurs anciens
+    X-XSS-Protection = "1; mode=block"
+
+    # Contrôle du referrer
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+    # Permissions navigateur (caméra, micro, géoloc désactivés)
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+    # Content Security Policy
+    Content-Security-Policy = """
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' https://identity.netlify.com https://unpkg.com https://www.googletagmanager.com;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      img-src 'self' data: https: blob:;
+      connect-src 'self' https://api.netlify.com https://www.google-analytics.com;
+      frame-src https://www.openstreetmap.org;
+      object-src 'none';
+      base-uri 'self'
+    """
+
+# Headers spécifiques pour le CMS admin
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Robots-Tag = "noindex"   # Empêche Google d'indexer l'admin
+
+# ── CACHE ASSETS ────────────────────────────────────────
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "*.png"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"
+
+[[headers]]
+  for = "*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=2592000"

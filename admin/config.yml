@@ -1,0 +1,259 @@
+# ═══════════════════════════════════════════════════════
+#  GIC SE-NA'A — Configuration Decap CMS
+#  Interface d'administration sans code
+#  Accès : https://votre-site.netlify.app/admin
+# ═══════════════════════════════════════════════════════
+
+# ── BACKEND (Netlify Git Gateway) ───────────────────────
+backend:
+  name: git-gateway
+  branch: main          # Branche GitHub principale
+  commit_messages:
+    create:  "✏️ Nouveau contenu : {{collection}} «{{slug}}»"
+    update:  "🔄 Mise à jour : {{collection}} «{{slug}}»"
+    delete:  "🗑️ Suppression : {{collection}} «{{slug}}»"
+    uploadMedia: "📷 Ajout image : {{path}}"
+    deleteMedia: "🗑️ Suppression image : {{path}}"
+
+# ── MÉDIAS ──────────────────────────────────────────────
+media_folder: "images/uploads"       # Où les images sont stockées
+public_folder: "/images/uploads"     # URL publique des images
+
+# ── LANGUE INTERFACE ────────────────────────────────────
+locale: fr
+
+# ── APERÇU EN TEMPS RÉEL ────────────────────────────────
+show_preview_links: true
+
+# ═══════════════════════════════════════════════════════
+#  COLLECTIONS (sections gérables sans code)
+# ═══════════════════════════════════════════════════════
+collections:
+
+  # ── 1. BLOG / ACTUALITÉS ──────────────────────────────
+  - name: "blog"
+    label: "📝 Blog & Actualités"
+    label_singular: "Article"
+    folder: "_blog"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    preview_path: "#blog"
+    summary: "{{title}} — {{date}}"
+    sortable_fields: ["date", "title"]
+    fields:
+      - label: "Titre de l'article"
+        name: "title"
+        widget: "string"
+        hint: "Ex : L'embouche bovine au Cameroun : nos techniques"
+
+      - label: "Date de publication"
+        name: "date"
+        widget: "datetime"
+        format: "YYYY-MM-DD"
+        date_format: "DD/MM/YYYY"
+        time_format: false
+        default: ""
+
+      - label: "Catégorie"
+        name: "categorie"
+        widget: "select"
+        options:
+          - { label: "🐂 Élevage", value: "elevage" }
+          - { label: "🌿 Agronomie", value: "agronomie" }
+          - { label: "🌍 Vision & Mission", value: "vision" }
+          - { label: "📢 Actualité", value: "actualite" }
+          - { label: "🤝 Partenariat", value: "partenariat" }
+
+      - label: "Résumé (affiché sur la carte blog)"
+        name: "resume"
+        widget: "text"
+        hint: "2-3 phrases maximum. Apparaît sur la page d'accueil."
+
+      - label: "Temps de lecture (minutes)"
+        name: "lecture"
+        widget: "number"
+        min: 1
+        max: 30
+        default: 5
+
+      - label: "Image de couverture"
+        name: "image"
+        widget: "image"
+        required: false
+        hint: "Format recommandé : 800×500px, JPG ou WebP"
+
+      - label: "Contenu de l'article"
+        name: "body"
+        widget: "markdown"
+        hint: "Rédigez votre article ici. Utilisez les boutons de mise en forme."
+
+      - label: "Publié ?"
+        name: "publie"
+        widget: "boolean"
+        default: true
+        hint: "Désactiver pour sauvegarder en brouillon"
+
+  # ── 2. ÉVÉNEMENTS ─────────────────────────────────────
+  - name: "evenements"
+    label: "📅 Événements"
+    label_singular: "Événement"
+    folder: "_evenements"
+    create: true
+    slug: "{{slug}}"
+    summary: "{{titre}} — {{date_evenement}}"
+    sortable_fields: ["date_evenement", "titre"]
+    fields:
+      - label: "Titre de l'événement"
+        name: "titre"
+        widget: "string"
+        hint: "Ex : Journée Portes Ouvertes — Ferme SE-NA'A"
+
+      - label: "Type"
+        name: "type"
+        widget: "select"
+        options:
+          - { label: "✅ Passé", value: "past" }
+          - { label: "🔜 À venir", value: "upcoming" }
+
+      - label: "Date de l'événement"
+        name: "date_evenement"
+        widget: "string"
+        hint: "Ex : 15 Septembre 2025 ou 'Date à confirmer — 2025'"
+
+      - label: "Description"
+        name: "description"
+        widget: "text"
+        hint: "2-3 phrases décrivant l'événement"
+
+      - label: "Lieu"
+        name: "lieu"
+        widget: "string"
+        required: false
+        hint: "Ex : Lom et Djéné, Ferme SE-NA'A"
+
+      - label: "Publié ?"
+        name: "publie"
+        widget: "boolean"
+        default: true
+
+  # ── 3. TÉMOIGNAGES / FEEDBACK ─────────────────────────
+  - name: "temoignages"
+    label: "💬 Témoignages"
+    label_singular: "Témoignage"
+    folder: "_temoignages"
+    create: true
+    slug: "{{slug}}"
+    summary: "{{nom}} — {{role}}"
+    fields:
+      - label: "Nom complet"
+        name: "nom"
+        widget: "string"
+        hint: "Ex : Dr. Daniel Mbarga"
+
+      - label: "Rôle / Fonction"
+        name: "role"
+        widget: "string"
+        hint: "Ex : Agronome, SODEPA"
+
+      - label: "Initiales (pour l'avatar)"
+        name: "initiales"
+        widget: "string"
+        hint: "2 lettres. Ex : DM"
+        pattern: ['^[A-Z]{2}$', "Exactement 2 lettres majuscules"]
+
+      - label: "Témoignage"
+        name: "texte"
+        widget: "text"
+        hint: "Le texte du témoignage, entre guillemets de préférence"
+
+      - label: "Note (étoiles)"
+        name: "note"
+        widget: "select"
+        options:
+          - { label: "★★★★★ (5/5)", value: "5" }
+          - { label: "★★★★☆ (4/5)", value: "4" }
+          - { label: "★★★☆☆ (3/5)", value: "3" }
+
+      - label: "Publié ?"
+        name: "publie"
+        widget: "boolean"
+        default: true
+
+  # ── 4. GALERIE PHOTOS ─────────────────────────────────
+  - name: "galerie"
+    label: "🖼️ Galerie Photos"
+    label_singular: "Photo"
+    folder: "_galerie"
+    create: true
+    slug: "{{slug}}"
+    summary: "{{legende}}"
+    fields:
+      - label: "Légende"
+        name: "legende"
+        widget: "string"
+        hint: "Description courte de la photo. Ex : Les pâturages en saison verte"
+
+      - label: "Photo"
+        name: "image"
+        widget: "image"
+        hint: "Format recommandé : 800×600px minimum, JPG ou WebP"
+
+      - label: "Catégorie"
+        name: "categorie"
+        widget: "select"
+        options:
+          - { label: "🌿 Pâturages & Nature", value: "paturages" }
+          - { label: "🐂 Animaux", value: "animaux" }
+          - { label: "🏗️ Infrastructures", value: "infrastructures" }
+          - { label: "👥 Équipe", value: "equipe" }
+          - { label: "🌄 Vue générale", value: "general" }
+
+      - label: "Publié ?"
+        name: "publie"
+        widget: "boolean"
+        default: true
+
+  # ── 5. PARAMÈTRES DU SITE ─────────────────────────────
+  - name: "parametres"
+    label: "⚙️ Paramètres du site"
+    files:
+      - name: "general"
+        label: "Informations générales"
+        file: "_data/parametres.json"
+        fields:
+          - label: "Nom du GIC"
+            name: "nom_gic"
+            widget: "string"
+            default: "GIC SE-NA'A"
+
+          - label: "Slogan"
+            name: "slogan"
+            widget: "string"
+            default: "Ferme de production du bacharia et d'embouche bovine"
+
+          - label: "Numéro WhatsApp"
+            name: "whatsapp"
+            widget: "string"
+            hint: "Format international sans espaces. Ex : 2376XXXXXXXX"
+
+          - label: "Email de contact"
+            name: "email"
+            widget: "string"
+            hint: "Ex : contact@senna.cm"
+
+          - label: "Adresse"
+            name: "adresse"
+            widget: "string"
+            default: "Lom et Djéné, Région de l'Est, Cameroun"
+
+          - label: "Lien Facebook"
+            name: "facebook"
+            widget: "string"
+            required: false
+            hint: "URL complète. Ex : https://facebook.com/gicsenaa"
+
+          - label: "Google Analytics ID"
+            name: "ga_id"
+            widget: "string"
+            required: false
+            hint: "Ex : G-XXXXXXXXXX (obtenu depuis analytics.google.com)"
