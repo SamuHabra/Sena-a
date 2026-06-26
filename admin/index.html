@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!--  <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
@@ -6,10 +6,94 @@
   <meta name="robots" content="noindex, nofollow">
   <title>Administration — GIC SE-NA'A</title>
   <!-- Netlify Identity Widget (authentification admin) -->
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <!-- <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
-  <!-- Decap CMS (anciennement Netlify CMS) -->
+  <!-- Decap CMS (anciennement Netlify CMS) 
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 </body>
-</html>
+</html> -->
+
+
+
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Administration — GIC SE-NA'A</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0D2419; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .card { background: #1A3D2B; border-radius: 12px; padding: 2.5rem 2rem; width: 100%; max-width: 400px; text-align: center; border: 1px solid rgba(200,134,42,.25); }
+    .logo { font-size: 1.4rem; font-weight: 700; color: #C8862A; margin-bottom: .25rem; }
+    .logo span { color: rgba(245,237,216,.6); font-weight: 400; font-size: 1rem; }
+    .sub { font-size: .82rem; color: rgba(245,237,216,.45); margin-bottom: 2rem; }
+    .netlify-identity-button { display: none !important; }
+    #login-btn {
+      width: 100%; padding: .9rem; background: #C8862A; color: #fff;
+      border: none; border-radius: 6px; font-size: .95rem; font-weight: 700;
+      cursor: pointer; transition: background .2s;
+    }
+    #login-btn:hover { background: #E8A03A; }
+    #msg { margin-top: 1rem; font-size: .82rem; color: rgba(245,237,216,.5); min-height: 1.2em; }
+    #cms-link { display: none; margin-top: 1rem; }
+    #cms-link a { color: #C8862A; font-size: .9rem; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">GIC <span>SE-NA'A</span></div>
+    <p class="sub">Interface d'administration</p>
+    <button id="login-btn">Se connecter avec Netlify</button>
+    <p id="msg">Connexion sécurisée via Netlify Identity</p>
+    <div id="cms-link"><a href="/admin/cms.html">→ Accéder au CMS</a></div>
+  </div>
+
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script>
+    const btn = document.getElementById('login-btn');
+    const msg = document.getElementById('msg');
+    const cmsLink = document.getElementById('cms-link');
+
+    // Initialisation
+    netlifyIdentity.init({ container: '#login-btn' });
+
+    // Vérifie si déjà connecté
+    netlifyIdentity.on('init', user => {
+      if (user) {
+        msg.textContent = '✅ Connecté : ' + user.email;
+        btn.textContent = 'Accéder au CMS →';
+        btn.onclick = () => window.location.href = '/admin/cms.html';
+        cmsLink.style.display = 'block';
+      }
+    });
+
+    // Après login
+    netlifyIdentity.on('login', user => {
+      msg.textContent = '✅ Connecté : ' + user.email;
+      btn.textContent = 'Accéder au CMS →';
+      btn.onclick = () => window.location.href = '/admin/cms.html';
+      netlifyIdentity.close();
+    });
+
+    // Bouton login
+    btn.addEventListener('click', () => {
+      const user = netlifyIdentity.currentUser();
+      if (!user) {
+        netlifyIdentity.open('login');
+      }
+    });
+
+    // Logout
+    netlifyIdentity.on('logout', () => {
+      msg.textContent = 'Déconnecté.';
+      btn.textContent = 'Se connecter avec Netlify';
+      btn.onclick = null;
+      cmsLink.style.display = 'none';
+    });
+  </script>
+</body>
+</html> 
