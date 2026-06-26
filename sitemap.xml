@@ -13,7 +13,7 @@
 
   <!-- Page principale -->
   <url>
-    <loc>https://gic-senaa.netlify.app/</loc>
+    <loc>https://sena-a.netlify.app/</loc>
     <lastmod>2025-06-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -21,63 +21,63 @@
 
   <!-- Sections de la landing page (ancres SEO) -->
   <url>
-    <loc>https://gic-senaa.netlify.app/#presentation</loc>
+    <loc>https://sena-a.netlify.app/#presentation</loc>
     <lastmod>2025-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://gic-senaa.netlify.app/#races</loc>
+    <loc>https://sena-a.netlify.app/#races</loc>
     <lastmod>2025-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://gic-senaa.netlify.app/#histoire</loc>
+    <loc>https://sena-a.netlify.app/#histoire</loc>
     <lastmod>2025-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://gic-senaa.netlify.app/#mission</loc>
+    <loc>https://sena-a.netlify.app/#mission</loc>
     <lastmod>2025-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://gic-senaa.netlify.app/#evenements</loc>
+    <loc>https://sena-a.netlify.app/#evenements</loc>
     <lastmod>2025-06-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://gic-senaa.netlify.app/#blog</loc>
+    <loc>https://sena-a.netlify.app/#blog</loc>
     <lastmod>2025-06-01</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>https://gic-senaa.netlify.app/#galerie</loc>
+    <loc>https://sena-a.netlify.app/#galerie</loc>
     <lastmod>2025-06-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://gic-senaa.netlify.app/#localisation</loc>
+    <loc>https://sena-a.netlify.app/#localisation</loc>
     <lastmod>2025-06-01</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
-    <loc>https://gic-senaa.netlify.app/#contact</loc>
+    <loc>https://sena-a.netlify.app/#contact</loc>
     <lastmod>2025-06-01</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>

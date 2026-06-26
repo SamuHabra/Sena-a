@@ -3,15 +3,9 @@
 #  Phase 2 : Déploiement + Sécurité + CMS
 # ═══════════════════════════════════════════════════════
 
-# ── BUILD ───────────────────────────────────────────────
 [build]
-  publish = "."          # Dossier racine (fichiers statiques)
-  command = ""           # Pas de build (HTML pur)
-
-# ── FORMULAIRES NETLIFY ─────────────────────────────────
-# Actif automatiquement grâce aux attributs data-netlify="true"
-# dans le formulaire HTML. Les soumissions apparaissent dans :
-# Netlify Dashboard → Forms → contact
+  publish = "."
+  command = ""
 
 # ── REDIRECTIONS ────────────────────────────────────────
 [[redirects]]
@@ -24,48 +18,31 @@
   to   = "/admin/index.html"
   status = 200
 
-# ── HEADERS DE SÉCURITÉ ─────────────────────────────────
-# Appliqués à toutes les pages
+# ── HEADERS SITE PUBLIC ─────────────────────────────────
 [[headers]]
   for = "/*"
   [headers.values]
-    # Anti-clickjacking
     X-Frame-Options = "SAMEORIGIN"
-
-    # Empêche le navigateur de deviner le type MIME
     X-Content-Type-Options = "nosniff"
-
-    # Force HTTPS pour 1 an
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
-
-    # Protection XSS navigateurs anciens
     X-XSS-Protection = "1; mode=block"
-
-    # Contrôle du referrer
     Referrer-Policy = "strict-origin-when-cross-origin"
-
-    # Permissions navigateur (caméra, micro, géoloc désactivés)
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://identity.netlify.com https://unpkg.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://api.netlify.com https://www.google-analytics.com https://*.netlify.com; frame-src https://www.openstreetmap.org; object-src 'none'; base-uri 'self'"
 
-    # Content Security Policy
-    Content-Security-Policy = """
-      default-src 'self';
-      script-src 'self' 'unsafe-inline' https://identity.netlify.com https://unpkg.com https://www.googletagmanager.com;
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-      font-src 'self' https://fonts.gstatic.com;
-      img-src 'self' data: https: blob:;
-      connect-src 'self' https://api.netlify.com https://www.google-analytics.com;
-      frame-src https://www.openstreetmap.org;
-      object-src 'none';
-      base-uri 'self'
-    """
+# ── HEADERS ADMIN CMS ───────────────────────────────────
+# unsafe-eval requis par Decap CMS
+[[headers]]
+  for = "/admin"
+  [headers.values]
+    X-Robots-Tag = "noindex"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://identity.netlify.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://api.netlify.com https://*.netlify.com https://api.github.com; frame-src 'self'; object-src 'none'"
 
-# Headers spécifiques pour le CMS admin
 [[headers]]
   for = "/admin/*"
   [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
-    X-Robots-Tag = "noindex"   # Empêche Google d'indexer l'admin
+    X-Robots-Tag = "noindex"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://identity.netlify.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://api.netlify.com https://*.netlify.com https://api.github.com; frame-src 'self'; object-src 'none'"
 
 # ── CACHE ASSETS ────────────────────────────────────────
 [[headers]]

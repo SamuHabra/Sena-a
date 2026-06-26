@@ -17,7 +17,7 @@ Disallow: /netlify.toml
 
 # Sitemap — aide Google à trouver toutes les pages
 # Remplacer par votre URL Netlify ou domaine final
-Sitemap: https://gic-senaa.netlify.app/sitemap.xml
+Sitemap: https://sena-a.netlify.app/sitemap.xml
 
 # Crawl delay suggéré (en secondes)
 Crawl-delay: 10
