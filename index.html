@@ -820,47 +820,6 @@ function renderEvenements(items) {
     </article>
   `).join('');
 
-  // Réinitialiser les filtres APRÈS rendu
-  const filtres = document.querySelectorAll('.efb');
-  
-  // Remettre "Tous" actif par défaut
-  filtres.forEach(b => b.classList.remove('on'));
-  document.querySelector('.efb[data-f="all"]').classList.add('on');
-
-  // Rebrancher les événements sur les boutons
-  filtres.forEach(b => {
-    // Supprimer les anciens listeners
-    const newBtn = b.cloneNode(true);
-    b.parentNode.replaceChild(newBtn, b);
-  });
-
-  // Ajouter les nouveaux listeners
-  document.querySelectorAll('.efb').forEach(b => {
-    b.addEventListener('click', () => {
-      document.querySelectorAll('.efb').forEach(x => x.classList.remove('on'));
-      b.classList.add('on');
-      const f = b.dataset.f;
-      document.querySelectorAll('.ec').forEach(c =>
-        c.classList.toggle('hid', f !== 'all' && c.dataset.t !== f)
-      );
-    });
-  });
-}
-  if (!items.length) return;
-  const grid = document.querySelector('.egrid');
-  if (!grid) return;
-
-  grid.innerHTML = items.map(ev => `
-    <article class="ec" data-t="${ev.type}">
-      <span class="etag ${ev.type === 'past' ? 'ep' : 'eu'}">
-        ${ev.type === 'past' ? 'Passé' : 'À venir'}
-      </span>
-      <h4>${ev.titre}</h4>
-      <p class="ecd">📅 ${ev.date}${ev.lieu ? ' — ' + ev.lieu : ''}</p>
-      <p>${ev.description}</p>
-    </article>
-  `).join('');
-
   // Réactiver les filtres
   document.querySelectorAll('.efb').forEach(b => {
     b.addEventListener('click', () => {
@@ -872,7 +831,7 @@ function renderEvenements(items) {
       );
     });
   });
-
+}
 
 /* ── BLOG ── */
 function renderBlog(items) {
