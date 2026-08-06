@@ -539,7 +539,7 @@ footer{background:var(--dk);border-top:1px solid rgba(196,137,43,.14);padding:2.
     <h2 class="h2 lt rv d1">Ce qu'ils disent de SE-NA'A</h2>
   </div>
   <div class="ffade rv d2">
-    <div class="ftrack">
+    <div class="ftrack"  id="fb-track">
       <div class="fc"><div class="fstars">★★★★★</div><p class="ftxt">"Le GIC SE-NA'A représente exactement le type de projet agricole dont la Région de l'Est a besoin. Moderne, inclusif et bien structuré."</p><div class="fauth"><div class="fav">DM</div><div><div class="fn">Dr. Daniel Mbarga</div><div class="fro">Agronome, SODEPA</div></div></div></div>
       <div class="fc"><div class="fstars">★★★★★</div><p class="ftxt">"J'ai acheté 3 bœufs engraissés chez SE-NA'A. La qualité de la viande était exceptionnelle, bien supérieure au marché local."</p><div class="fauth"><div class="fav">AK</div><div><div class="fn">Amadou Koné</div><div class="fro">Boucher grossiste, Bertoua</div></div></div></div>
       <div class="fc"><div class="fstars">★★★★☆</div><p class="ftxt">"Investir dans ce GIC a été l'une de mes meilleures décisions. L'équipe est sérieuse et le projet avance concrètement."</p><div class="fauth"><div class="fav">PF</div><div><div class="fn">Pierre Fomekong</div><div class="fro">Investisseur, Yaoundé</div></div></div></div>
@@ -760,6 +760,113 @@ cform.addEventListener('submit', async e => {
 /* ── COOKIE ── */
 if(!localStorage.getItem('senna_ck'))setTimeout(()=>document.getElementById('ck').classList.add('show'),1800);
 document.getElementById('ckok').addEventListener('click',()=>{localStorage.setItem('senna_ck','1');document.getElementById('ck').classList.remove('show')});
+
+/* ── CONTENU DYNAMIQUE GOOGLE SHEETS ── */
+const API_URL = 'https://script.google.com/macros/s/AKfycbyfGzkvr3eS-APu2AeXV9-Pq06FpByGXtjjrrLFwk-k5H79ZPgcY1GS7qqBhcyrK8Dt-Q/exec?type=all';
+
+async function loadDynamicContent() {
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    
+    if (data.temoignages) renderTemoignages(data.temoignages);
+    if (data.evenements)  renderEvenements(data.evenements);
+    if (data.blog)        renderBlog(data.blog);
+
+  } catch(err) {
+    console.log('Contenu statique affiché');
+  }
+}
+
+/* ── TÉMOIGNAGES ── */
+function renderTemoignages(items) {
+  if (!items.length) return;
+  const track = document.getElementById('fb-track');
+  if (!track) return;
+
+  const stars = n => '★'.repeat(+n) + '☆'.repeat(5 - +n);
+
+  const html = [...items, ...items].map(t => `
+    <div class="fc">
+      <div class="fstars">${stars(t.note)}</div>
+      <p class="ftxt">"${t.texte}"</p>
+      <div class="fauth">
+        <div class="fav">${t.initiales}</div>
+        <div>
+          <div class="fn">${t.nom}</div>
+          <div class="fro">${t.role}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  track.innerHTML = html;
+}
+
+/* ── ÉVÉNEMENTS ── */
+function renderEvenements(items) {
+  if (!items.length) return;
+  const grid = document.querySelector('.egrid');
+  if (!grid) return;
+
+  grid.innerHTML = items.map(ev => `
+    <article class="ec" data-t="${ev.type}">
+      <span class="etag ${ev.type === 'past' ? 'ep' : 'eu'}">
+        ${ev.type === 'past' ? 'Passé' : 'À venir'}
+      </span>
+      <h4>${ev.titre}</h4>
+      <p class="ecd">📅 ${ev.date}${ev.lieu ? ' — ' + ev.lieu : ''}</p>
+      <p>${ev.description}</p>
+    </article>
+  `).join('');
+
+  // Réactiver les filtres
+  document.querySelectorAll('.efb').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.efb').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+      const f = b.dataset.f;
+      document.querySelectorAll('.ec').forEach(c => 
+        c.classList.toggle('hid', f !== 'all' && c.dataset.t !== f)
+      );
+    });
+  });
+}
+
+/* ── BLOG ── */
+function renderBlog(items) {
+  if (!items.length) return;
+  const grid = document.querySelector('.bgrid');
+  if (!grid) return;
+
+  const icons = {
+    'elevage':'🐂','agronomie':'🌿','vision':'🌍','actualite':'📢','partenariat':'🤝'
+  };
+  const classes = ['bt1','bt2','bt3','bt1','bt2'];
+
+  grid.innerHTML = items.map((b, i) => `
+    <article class="bc">
+      <div class="bt ${classes[i % 3]}">
+        <span>${icons[b.categorie] || '📰'}</span>
+        <span class="bcat">${b.categorie}</span>
+      </div>
+      <div class="bb">
+        <h4>${b.titre}</h4>
+        <p>${b.resume}</p>
+        <div class="bmeta">
+          <span>🗓 ${b.date}</span>
+          <span>⏱ ${b.lecture} min</span>
+        </div>
+        <a href="#" class="brd">Lire l'article →</a>
+      </div>
+    </article>
+  `).join('');
+}
+
+/* ── Lancer au chargement ── */
+loadDynamicContent();
+
+
 </script>
 </body>
 </html>
