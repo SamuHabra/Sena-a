@@ -589,7 +589,7 @@ footer{background:var(--dk);border-top:1px solid rgba(196,137,43,.14);padding:2.
         <div class="cr"><span class="cic">✉️</span><div><strong>Email</strong><span>contact@senna.cm</span></div></div>
         <div class="cr"><span class="cic">🕐</span><div><strong>Disponibilité</strong><span>Lun–Sam, 7h–18h (WAT)</span></div></div>
       </div>
-      <form class="cform rr d2" id="cform" name="contact" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" novalidate>
+      <form class="cform rr d2" id="cform" name="contact" method="POST" data-netlify="true" data-netlify-honeypot="bot-field"  action="/success.html" >
         <input type="hidden" name="form-name" value="contact">
         <input name="bot-field" style="display:none">
         <div class="frow">
@@ -711,15 +711,35 @@ window.addEventListener('scroll',()=>stb.classList.toggle('v',scrollY>400),{pass
 
 /* ── CONTACT FORM (Netlify Forms) ── */
 const cform=document.getElementById('cform'),fmsgr=document.getElementById('fmsgr'),fsub=document.getElementById('fsub');
-cform.addEventListener('submit',async e=>{
+cform.addEventListener('submit', async e => {
   e.preventDefault();
-  if(!cform.checkValidity()){fmsgr.textContent='⚠️ Remplissez tous les champs obligatoires.';fmsgr.className='fmsg err';return}
-  fsub.textContent='Envoi…';fsub.disabled=true;
-  try{
-    await fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(new FormData(cform)).toString()});
-    fmsgr.textContent='✅ Message envoyé ! Réponse sous 24h.';fmsgr.className='fmsg ok';cform.reset();
-  }catch{fmsgr.textContent='❌ Erreur. Contactez-nous sur WhatsApp.';fmsgr.className='fmsg err'}
-  finally{fsub.textContent='Envoyer le message →';fsub.disabled=false}
+  if(!cform.checkValidity()) {
+    fmsgr.textContent='⚠️ Remplissez tous les champs obligatoires.';
+    fmsgr.className='fmsg err';
+    return;
+  }
+  fsub.textContent='Envoi…';
+  fsub.disabled=true;
+  try {
+    const response = await fetch('/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: new URLSearchParams(new FormData(cform)).toString()
+    });
+    if(response.ok) {
+      fmsgr.textContent='✅ Message envoyé ! Réponse sous 24h.';
+      fmsgr.className='fmsg ok';
+      cform.reset();
+    } else {
+      throw new Error('Erreur réseau');
+    }
+  } catch {
+    fmsgr.textContent='❌ Erreur. Contactez-nous sur WhatsApp.';
+    fmsgr.className='fmsg err';
+  } finally {
+    fsub.textContent='Envoyer le message →';
+    fsub.disabled=false;
+  }
 });
 
 /* ── COOKIE ── */
