@@ -981,16 +981,24 @@ function renderBlog(items) {
   const grid = document.querySelector('.bgrid');
   if (!grid) return;
 
-  const icons = {
-    'elevage':'🐂','agronomie':'🌿','vision':'🌍','actualite':'📢','partenariat':'🤝'
-  };
-  const classes = ['bt1','bt2','bt3','bt1','bt2'];
+  // Photos de la ferme comme vignettes
+  const photos = [
+    'images/hero.webp',
+    'images/troupeau.webp',
+    'images/equipe-sena.webp',
+    'images/equipe-terrain.webp',
+    'images/veau.webp',
+    'images/veau-soleil.webp'
+  ];
 
   grid.innerHTML = items.map((b, i) => `
     <article class="bc">
-      <div class="bt ${classes[i % 3]}">
-        <span>${icons[b.categorie] || '📰'}</span>
-        <span class="bcat">${b.categorie}</span>
+      <div class="bt" style="background:none;padding:0;height:185px;">
+        <img src="${photos[i % photos.length]}" 
+             alt="${b.titre}" 
+             loading="lazy"
+             style="width:100%;height:100%;object-fit:cover;display:block;">
+        <span class="bcat" style="position:absolute;top:.7rem;left:.7rem;">${b.categorie}</span>
       </div>
       <div class="bb">
         <h4>${b.titre}</h4>
