@@ -1,0 +1,393 @@
+'use strict';
+
+/* ── NAV ── */
+const bur = document.getElementById('bur');
+const nl = document.getElementById('nl');
+bur.addEventListener('click', () => {
+  const o = bur.classList.toggle('x');
+  nl.classList.toggle('open', o);
+  bur.setAttribute('aria-expanded', o);
+});
+nl.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  bur.classList.remove('x');
+  nl.classList.remove('open');
+  bur.setAttribute('aria-expanded', false);
+}));
+
+/* ── NAV ACTIVE LINK ON SCROLL ── */
+const sections = [...document.querySelectorAll('section[id],div[id]')];
+const navLinks = [...document.querySelectorAll('.nl a')];
+window.addEventListener('scroll', () => {
+  let cur = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) cur = s.id; });
+  navLinks.forEach(a => { a.classList.toggle('active', a.getAttribute('href') === '#' + cur); });
+}, { passive: true });
+
+/* ── REVEAL ── */
+const robs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('on');
+      robs.unobserve(entry.target);
+    }
+  });
+}, { threshold: .1, rootMargin: '0px 0px -30px 0px' });
+document.querySelectorAll('.rv,.rl,.rr').forEach(el => robs.observe(el));
+
+/* ── COUNTERS ── */
+let counted = false;
+const cobs = new IntersectionObserver(entries => {
+  if (!entries[0].isIntersecting || counted) return;
+  counted = true;
+  cobs.disconnect();
+
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const end = +el.dataset.t;
+    const dur = 1600;
+    let start = null;
+    const step = timestamp => {
+      if (!start) start = timestamp;
+      const progress = Math.min((timestamp - start) / dur, 1);
+      el.textContent = Math.round((1 - Math.pow(1 - progress, 3)) * end);
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = end;
+    };
+    requestAnimationFrame(step);
+  });
+}, { threshold: .3 });
+cobs.observe(document.querySelector('.hstats'));
+
+/* ── QUIZ FERME ── */
+const quizChoices = { 1: null, 2: null, 3: null };
+const quizButtons = document.querySelectorAll('.qq-btn');
+const quizSubmit = document.getElementById('quiz-submit');
+const quizReset = document.getElementById('quiz-reset');
+const quizResult = document.getElementById('quiz-result');
+
+const quizBreeds = {
+  goudali: {
+    title: 'Goudali',
+    description: 'Votre profil ambitionne la performance et la robustesse : vous incarnez la race Goudali, puissante, rapide et bien adaptée à l’élevage intensif.',
+    emoji: '🐂'
+  },
+  kouri: {
+    title: 'Kouri',
+    description: 'Vous êtes flexible et équilibré. Le Kouri combine polyvalence, qualité et adaptation locale, parfait pour un projet moderne et durable.',
+    emoji: '🐄'
+  },
+  mbororo: {
+    title: 'Mbororo',
+    description: 'Vous misez sur l’héritage et la communauté. Le profil Mbororo valorise le savoir-faire traditionnel et l’ancrage culturel.',
+    emoji: '🐃'
+  }
+};
+
+quizButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const q = button.dataset.q;
+    const breed = button.dataset.breed;
+    quizChoices[q] = breed;
+    document.querySelectorAll(`.qq-btn[data-q="${q}"]`).forEach(btn => btn.classList.toggle('active', btn === button));
+    quizResult.innerHTML = '';
+  });
+});
+
+const computeQuizResult = () => {
+  const counts = { goudali: 0, kouri: 0, mbororo: 0 };
+  Object.values(quizChoices).forEach(value => { if (value) counts[value] += 1; });
+  const maxScore = Math.max(counts.goudali, counts.kouri, counts.mbororo);
+  const winner = ['goudali', 'kouri', 'mbororo'].find(key => counts[key] === maxScore) || 'goudali';
+  return quizBreeds[winner];
+};
+
+quizSubmit.addEventListener('click', () => {
+  if (!quizChoices[1] || !quizChoices[2] || !quizChoices[3]) {
+    quizResult.innerHTML = '<p>⚠️ Répondez aux trois questions pour découvrir votre type de bétail.</p>';
+    quizResult.classList.remove('show');
+    return;
+  }
+  const result = computeQuizResult();
+  quizResult.innerHTML = `<h3>${result.emoji} ${result.title}</h3><p>${result.description}</p>`;
+  requestAnimationFrame(() => quizResult.classList.add('show'));
+});
+
+quizReset.addEventListener('click', () => {
+  quizChoices[1] = quizChoices[2] = quizChoices[3] = null;
+  quizButtons.forEach(button => button.classList.remove('active'));
+  quizResult.innerHTML = '';
+  quizResult.classList.remove('show');
+});
+
+/* ── LIGHTBOX with navigation ── */
+const lb = document.getElementById('lb');
+const lbi = document.getElementById('lbi');
+const galItems = [...document.querySelectorAll('.gi[data-img]')];
+let lbIdx = 0;
+const openLb = idx => {
+  lbIdx = idx;
+  lbi.src = galItems[lbIdx].dataset.img;
+  lbi.alt = galItems[lbIdx].getAttribute('aria-label') || '';
+  lb.classList.add('open');
+};
+
+document.getElementById('lbc').addEventListener('click', () => lb.classList.remove('open'));
+lb.addEventListener('click', event => { if (event.target === lb) lb.classList.remove('open'); });
+document.getElementById('lbprev').addEventListener('click', () => openLb((lbIdx - 1 + galItems.length) % galItems.length));
+document.getElementById('lbnext').addEventListener('click', () => openLb((lbIdx + 1) % galItems.length));
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') lb.classList.remove('open');
+  if (event.key === 'ArrowLeft' && lb.classList.contains('open')) openLb((lbIdx - 1 + galItems.length) % galItems.length);
+  if (event.key === 'ArrowRight' && lb.classList.contains('open')) openLb((lbIdx + 1) % galItems.length);
+});
+
+galItems.forEach((gi, index) => {
+  gi.addEventListener('click', () => openLb(index));
+  gi.addEventListener('keydown', event => { if (event.key === 'Enter') openLb(index); });
+});
+
+/* ── SCROLL TOP ── */
+const stb = document.getElementById('stb');
+window.addEventListener('scroll', () => stb.classList.toggle('v', window.scrollY > 400), { passive: true });
+stb.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+/* ── CONTACT FORM (Netlify Forms) */
+const cform = document.getElementById('cform');
+const fmsgr = document.getElementById('fmsgr');
+const fsub = document.getElementById('fsub');
+const formControls = [...cform.querySelectorAll('input, textarea, select')].filter(input => input.type !== 'hidden');
+let sending = false;
+
+const resetValidation = () => {
+  formControls.forEach(control => {
+    const wrapper = control.closest('.fg');
+    if (wrapper) wrapper.classList.remove('invalid');
+    control.removeAttribute('aria-invalid');
+  });
+};
+
+const markInvalidFields = () => {
+  const invalidControls = formControls.filter(control => !control.checkValidity());
+  invalidControls.forEach(control => {
+    const wrapper = control.closest('.fg');
+    if (wrapper) wrapper.classList.add('invalid');
+    control.setAttribute('aria-invalid', 'true');
+  });
+  return invalidControls;
+};
+
+formControls.forEach(control => {
+  control.addEventListener('input', () => {
+    const wrapper = control.closest('.fg');
+    if (wrapper && wrapper.classList.contains('invalid')) wrapper.classList.remove('invalid');
+    control.removeAttribute('aria-invalid');
+    fmsgr.textContent = '';
+    fmsgr.className = 'fmsg';
+  });
+});
+
+cform.addEventListener('submit', async event => {
+  event.preventDefault();
+  if (sending) return;
+
+  resetValidation();
+  if (!cform.checkValidity()) {
+    const invalidControls = markInvalidFields();
+    const firstInvalid = invalidControls[0];
+    if (firstInvalid) firstInvalid.focus({ preventScroll: true });
+
+    fmsgr.textContent = '⚠️ Merci de vérifier les champs en surbrillance.';
+    fmsgr.className = 'fmsg err';
+    return;
+  }
+
+  sending = true;
+  fsub.textContent = 'Envoi…';
+  fsub.disabled = true;
+  fmsgr.textContent = '⏳ Envoi en cours…';
+  fmsgr.className = 'fmsg';
+
+  const formData = new URLSearchParams(new FormData(cform)).toString();
+
+  try {
+    await Promise.all([
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData
+      }),
+      fetch('/.netlify/functions/form-handler', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData
+      })
+    ]);
+
+    fmsgr.textContent = '✅ Message envoyé ! Réponse sous 24h.';
+    fmsgr.className = 'fmsg ok';
+    cform.reset();
+  } catch {
+    fmsgr.textContent = '❌ Erreur d’envoi. Essayez de nouveau ou écrivez sur WhatsApp.';
+    fmsgr.className = 'fmsg err';
+  } finally {
+    fsub.textContent = 'Envoyer le message →';
+    fsub.disabled = false;
+    sending = false;
+  }
+});
+
+/* ── COOKIE ── */
+if (!localStorage.getItem('senna_ck')) {
+  setTimeout(() => document.getElementById('ck').classList.add('show'), 1800);
+}
+
+document.getElementById('ckok').addEventListener('click', () => {
+  localStorage.setItem('senna_ck', '1');
+  document.getElementById('ck').classList.remove('show');
+});
+
+/* ── CONTENU DYNAMIQUE GOOGLE SHEETS ── */
+const API_URL = 'https://script.google.com/macros/s/AKfycbyfGzkvr3eS-APu2AeXV9-Pq06FpByGXtjjrrLFwk-k5H79ZPgcY1GS7qqBhcyrK8Dt-Q/exec?type=all';
+
+async function loadDynamicContent() {
+  try {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+
+    if (data.temoignages) renderTemoignages(data.temoignages);
+    if (data.blog) renderBlog(data.blog);
+  } catch (err) {
+    console.log('Contenu statique affiché');
+  }
+}
+
+/* ── TÉMOIGNAGES ── */
+function renderTemoignages(items) {
+  if (!items.length) return;
+  const track = document.getElementById('fb-track');
+  if (!track) return;
+
+  const stars = n => '★'.repeat(+n) + '☆'.repeat(5 - +n);
+
+  track.innerHTML = [...items, ...items].map(t => `
+    <div class="fc">
+      <div class="fstars">${stars(t.note)}</div>
+      <p class="ftxt">"${t.texte}"</p>
+      <div class="fauth">
+        <div class="fav">${t.initiales}</div>
+        <div>
+          <div class="fn">${t.nom}</div>
+          <div class="fro">${t.role}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+
+/* ── BLOG ── */
+function renderBlog(items) {
+  if (!items.length) return;
+  const grid = document.querySelector('.bgrid');
+  if (!grid) return;
+
+  const photos = [
+    'images/hero.webp',
+    'images/troupeau.webp',
+    'images/equipe-sena.webp',
+    'images/equipe-terrain.webp',
+    'images/veau.webp',
+    'images/veau-soleil.webp'
+  ];
+
+  grid.innerHTML = items.map((b, i) => `
+    <article class="bc">
+      <div class="bt">
+        <img src="${photos[i % photos.length]}"
+             alt="${b.titre}"
+             loading="lazy">
+        <span class="bcat">${b.categorie}</span>
+      </div>
+      <div class="bb">
+        <h4>${b.titre}</h4>
+        <p>${b.resume}</p>
+        <div class="bmeta">
+          <span>🗓 ${b.date}</span>
+          <span>⏱ ${b.lecture} min</span>
+        </div>
+        <a href="#" class="brd">Lire l'article →</a>
+      </div>
+    </article>
+  `).join('');
+}
+
+/* ── Lancer au chargement ── */
+loadDynamicContent();
+
+/* ── MODE SOMBRE / CLAIR ── */
+const themeBtn = document.getElementById('theme-toggle');
+const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+const savedTheme = localStorage.getItem('senna_theme') || (systemPrefersDark ? 'dark' : 'light');
+const setTheme = theme => {
+  document.documentElement.setAttribute('data-theme', theme);
+  themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  themeBtn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+  themeBtn.setAttribute('aria-label', theme === 'dark' ? 'Activer le mode clair' : 'Activer le mode sombre');
+};
+
+setTheme(savedTheme);
+
+themeBtn.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('senna_theme', next);
+  setTheme(next);
+});
+
+/* ══ TYPEWRITER EFFECT ═══════════════════════════════════ */
+function typeWriter(el, text, speed, onDone) {
+  let i = 0;
+  el.textContent = '';
+  el.style.width = '0';
+  el.style.borderRight = '3px solid #C4892B';
+
+  const type = () => {
+    if (i < text.length) {
+      el.textContent += text.charAt(i);
+      el.style.width = 'auto';
+      i++;
+      setTimeout(type, speed);
+    } else {
+      let blinks = 0;
+      const blink = setInterval(() => {
+        el.style.borderRight = blinks % 2 === 0 ? 'none' : '3px solid #C4892B';
+        blinks++;
+        if (blinks >= 6) {
+          clearInterval(blink);
+          el.style.borderRight = 'none';
+          el.classList.add('done');
+          if (onDone) onDone();
+        }
+      }, 300);
+    }
+  };
+
+  type();
+}
+
+window.addEventListener('load', () => {
+  const lines = document.querySelectorAll('.tw-line');
+  if (!lines.length) return;
+
+  const texts = [...lines].map(line => line.dataset.text || '');
+  const speeds = [55, 65, 50];
+
+  function runLine(index) {
+    if (index >= lines.length) return;
+    typeWriter(lines[index], texts[index], speeds[index], () => {
+      setTimeout(() => runLine(index + 1), 200);
+    });
+  }
+
+  setTimeout(() => runLine(0), 100);
+});
