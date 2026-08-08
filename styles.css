@@ -340,18 +340,20 @@ button{cursor:pointer;font-family:inherit;border:none}
   display:inline-flex;
   align-items:center;
   gap:.5rem;
-  background:rgba(196,137,43,.14);
-  border:1px solid rgba(196,137,43,.35);
-  color:var(--glt);
-  font-size:.7rem;
+  background:rgba(196,137,43,.25);
+  border:1.5px solid rgba(196,137,43,.7);
+  color:#fff;
+  font-size:.75rem;
   font-weight:700;
   letter-spacing:.18em;
   text-transform:uppercase;
-  padding:.38rem 1.05rem;
+  padding:.5rem 1.2rem;
   border-radius:20px;
   margin-bottom:1.5rem;
   opacity:0;
   animation:fu .6s .15s forwards;
+  text-shadow:0 1px 4px rgba(0,0,0,.5);
+  box-shadow:0 2px 16px rgba(196,137,43,.25);
 }
 
 
