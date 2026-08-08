@@ -293,33 +293,43 @@ function renderBlog(items) {
   if (!grid) return;
 
   const photos = [
-    'images/hero.webp',
-    'images/troupeau.webp',
-    'images/equipe-sena.webp',
-    'images/equipe-terrain.webp',
-    'images/veau.webp',
-    'images/veau-soleil.webp'
+    'images/hero.webp','images/troupeau.webp',
+    'images/equipe-sena.webp','images/equipe-terrain.webp',
+    'images/veau.webp','images/veau-soleil.webp'
   ];
 
   grid.innerHTML = items.map((b, i) => `
-    <article class="bc">
-      <div class="bt">
-        <img src="${photos[i % photos.length]}"
+    <article class="bc" style="cursor:pointer"
+      data-titre="${(b.titre||'').replace(/"/g,'&quot;')}"
+      data-resume="${(b.resume||'').replace(/"/g,'&quot;')}"
+      data-contenu="${(b.contenu||'').replace(/"/g,'&quot;')}"
+      data-image="${b.image || photos[i % photos.length]}"
+      data-date="${b.date||''}"
+      data-categorie="${b.categorie||''}">
+      <div class="bt" style="position:relative;height:185px;overflow:hidden;">
+        <img src="${b.image || photos[i % photos.length]}"
              alt="${b.titre}"
-             loading="lazy">
+             loading="lazy"
+             onerror="this.src='${photos[i % photos.length]}'"
+             style="width:100%;height:100%;object-fit:cover;display:block;">
         <span class="bcat">${b.categorie}</span>
       </div>
       <div class="bb">
         <h4>${b.titre}</h4>
-        <p>${b.resume}</p>
+        <p>${(b.resume||'').substring(0,100)}…</p>
         <div class="bmeta">
           <span>🗓 ${b.date}</span>
           <span>⏱ ${b.lecture} min</span>
         </div>
-        <a href="#" class="brd">Lire l'article →</a>
+        <span class="brd">Lire l'article →</span>
       </div>
     </article>
   `).join('');
+
+  // Ouvrir modal au clic
+  grid.querySelectorAll('.bc').forEach(card => {
+    card.addEventListener('click', () => openBlogModal(card.dataset));
+  });
 }
 
 /* ── Lancer au chargement ── */
@@ -530,7 +540,7 @@ async function loadBlogArticles() {
 }
 
 /* ── MODAL BLOG ── */
-function openBlogModal(d) {
+/*function openBlogModal(d) {
   document.getElementById('bmi').src        = d.image || '';
   document.getElementById('bm-titre').textContent  = d.titre || '';
   document.getElementById('bm-resume').textContent = d.resume || '';
@@ -564,4 +574,42 @@ document.addEventListener('keydown', e => {
 });
 
 // Lancer au chargement
-loadBlogArticles();
+loadBlogArticles();*/
+
+
+
+/* ── MODAL BLOG ── */
+function openBlogModal(d) {
+  document.getElementById('bmi').src = d.image || '';
+  document.getElementById('bm-titre').textContent   = d.titre || '';
+  document.getElementById('bm-cat').textContent     = d.categorie || '';
+  document.getElementById('bm-date').textContent    = '🗓 ' + (d.date || '');
+  document.getElementById('bm-contenu').textContent = d.contenu || d.resume || '';
+  document.getElementById('bm-wa').href =
+    `https://wa.me/?text=${encodeURIComponent((d.titre||'') + ' — GIC SE-NA\'A sena-a.netlify.app')}`;
+
+  const modal = document.getElementById('blog-modal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  // Scroll en haut du modal
+  document.getElementById('blog-modal-inner').scrollTop = 0;
+}
+
+document.getElementById('blog-modal-close').addEventListener('click', () => {
+  document.getElementById('blog-modal').style.display = 'none';
+  document.body.style.overflow = '';
+});
+
+document.getElementById('blog-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) {
+    e.currentTarget.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('blog-modal');
+    if (modal) { modal.style.display = 'none'; document.body.style.overflow = ''; }
+  }
+});

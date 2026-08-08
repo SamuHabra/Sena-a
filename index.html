@@ -452,7 +452,7 @@
 <!-- Cookie -->
 <div id="ck"><p>🍪 Ce site utilise Google Analytics. <a href="#">Politique de confidentialité</a>.</p><button id="ckok">J'accepte</button></div>
 
-<!-- Modal Article Blog -->
+<!-- Modal Blog -->
 <div id="blog-modal" style="
   position:fixed;inset:0;z-index:998;
   background:rgba(0,0,0,.88);
@@ -467,7 +467,7 @@
     max-width:720px;width:100%;
     max-height:88vh;overflow-y:auto;
     position:relative;
-  ">
+  " id="blog-modal-inner">
     <button id="blog-modal-close" style="
       position:absolute;top:1rem;right:1rem;
       background:rgba(0,0,0,.08);border:none;
@@ -476,35 +476,44 @@
       display:flex;align-items:center;justify-content:center;
       z-index:2;
     ">✕</button>
-    <div id="blog-modal-img" style="height:240px;border-radius:14px 14px 0 0;overflow:hidden;">
+    <div style="height:260px;border-radius:14px 14px 0 0;overflow:hidden;">
       <img id="bmi" src="" alt="" style="width:100%;height:100%;object-fit:cover;">
     </div>
     <div style="padding:2rem;">
-      <span id="bm-source" style="
+      <span id="bm-cat" style="
         font-size:.7rem;font-weight:700;letter-spacing:.12em;
         text-transform:uppercase;color:var(--gold);
+        display:block;margin-bottom:.5rem;
       "></span>
       <h2 id="bm-titre" style="
         font-family:'Fraunces',serif;
         font-size:1.6rem;font-weight:700;
-        color:var(--gd);margin:.6rem 0 1rem;
+        color:var(--gd);margin-bottom:.5rem;
         line-height:1.25;
       "></h2>
-      <p id="bm-resume" style="
-        font-size:.95rem;color:var(--mu);
-        line-height:1.8;margin-bottom:1.5rem;
-      "></p>
+      <p style="font-size:.78rem;color:var(--mu);margin-bottom:1.2rem;" id="bm-date"></p>
+      <div id="bm-contenu" style="
+        font-size:.95rem;color:#333;
+        line-height:1.85;margin-bottom:1.8rem;
+        border-top:1px solid rgba(45,92,50,.1);
+        padding-top:1.2rem;
+        white-space:pre-line;
+      "></div>
       <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-        <a id="bm-lire" href="#" target="_blank" rel="noopener" class="btn btn-g">
-          Lire l'article complet →
-        </a>
-        <a id="bm-wa" href="#" target="_blank" rel="noopener" class="btn btn-o" style="color:var(--gd)">
+        <a id="bm-wa" href="#" target="_blank" rel="noopener" class="btn btn-g">
           Partager sur WhatsApp
         </a>
+        <button onclick="document.getElementById('blog-modal').style.display='none';document.body.style.overflow='';"
+          class="btn btn-o" style="border:1.5px solid rgba(45,92,50,.2);color:var(--gd)">
+          Fermer
+        </button>
       </div>
     </div>
   </div>
 </div>
+
+
+
 
 <script src="main.js" defer></script>
 </body>
