@@ -287,6 +287,39 @@ function renderTemoignages(items) {
 
 
 /* ── BLOG ── */
+function bindBlogCards() {
+  const grid = document.querySelector('.bgrid');
+  if (!grid) return;
+
+  grid.querySelectorAll('.bc').forEach(card => {
+    if (card.dataset.bound === 'true') return;
+
+    card.dataset.bound = 'true';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+
+    const openCardModal = () => {
+      const dataset = {
+        titre: card.dataset.titre || card.querySelector('h4')?.textContent?.trim() || '',
+        resume: card.dataset.resume || card.querySelector('p')?.textContent?.trim() || '',
+        contenu: card.dataset.contenu || card.dataset.resume || card.querySelector('p')?.textContent?.trim() || '',
+        image: card.dataset.image || card.querySelector('img')?.getAttribute('src') || '',
+        date: card.dataset.date || card.querySelector('.bmeta span')?.textContent?.replace('🗓 ', '').trim() || '',
+        categorie: card.dataset.categorie || card.querySelector('.bcat')?.textContent?.trim() || ''
+      };
+      openBlogModal(dataset);
+    };
+
+    card.addEventListener('click', openCardModal);
+    card.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openCardModal();
+      }
+    });
+  });
+}
+
 function renderBlog(items) {
   if (!items.length) return;
   const grid = document.querySelector('.bgrid');
@@ -326,13 +359,11 @@ function renderBlog(items) {
     </article>
   `).join('');
 
-  // Ouvrir modal au clic
-  grid.querySelectorAll('.bc').forEach(card => {
-    card.addEventListener('click', () => openBlogModal(card.dataset));
-  });
+  bindBlogCards();
 }
 
 /* ── Lancer au chargement ── */
+bindBlogCards();
 loadDynamicContent();
 
 /* ── MODE SOMBRE / CLAIR ── */
@@ -529,10 +560,7 @@ async function loadBlogArticles() {
       </article>
     `).join('');
 
-    // Ouvrir modal au clic
-    grid.querySelectorAll('.bc').forEach(card => {
-      card.addEventListener('click', () => openBlogModal(card.dataset));
-    });
+    bindBlogCards();
 
   } catch(err) {
     console.log('Articles externes non disponibles');
@@ -580,18 +608,25 @@ loadBlogArticles();*/
 
 /* ── MODAL BLOG ── */
 function openBlogModal(d) {
-  document.getElementById('bmi').src = d.image || '';
-  document.getElementById('bm-titre').textContent   = d.titre || '';
-  document.getElementById('bm-cat').textContent     = d.categorie || '';
-  document.getElementById('bm-date').textContent    = '🗓 ' + (d.date || '');
-  document.getElementById('bm-contenu').textContent = d.contenu || d.resume || '';
-  document.getElementById('bm-wa').href =
-    `https://wa.me/?text=${encodeURIComponent((d.titre||'') + ' — GIC SE-NA\'A sena-a.netlify.app')}`;
-
   const modal = document.getElementById('blog-modal');
+  const imageEl = document.getElementById('bmi');
+  const titleEl = document.getElementById('bm-titre');
+  const catEl = document.getElementById('bm-cat');
+  const dateEl = document.getElementById('bm-date');
+  const contentEl = document.getElementById('bm-contenu');
+  const waEl = document.getElementById('bm-wa');
+
+  if (!modal || !imageEl || !titleEl || !catEl || !dateEl || !contentEl || !waEl) return;
+
+  imageEl.src = d.image || '';
+  titleEl.textContent = d.titre || '';
+  catEl.textContent = d.categorie || '';
+  dateEl.textContent = '🗓 ' + (d.date || '');
+  contentEl.textContent = d.contenu || d.resume || '';
+  waEl.href = `https://wa.me/?text=${encodeURIComponent((d.titre || '') + ' — GIC SE-NA\'A sena-a.netlify.app')}`;
+
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
-  // Scroll en haut du modal
   document.getElementById('blog-modal-inner').scrollTop = 0;
 }
 
