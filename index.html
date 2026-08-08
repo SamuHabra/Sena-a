@@ -35,7 +35,19 @@
 
 </head>
 <body>
-
+<!-- Barre de progression -->
+<div id="progress-bar" style="
+  position:fixed;
+  top:0;left:0;
+  height:8px;
+  width:0%;
+  background:linear-gradient(to right,var(--gold),var(--glt),var(--gold));
+  z-index:999;
+  transition:width .1s ease;
+  background-size:200% 100%;
+  animation:progress-shine 2s linear infinite;
+  box-shadow:0 0 10px rgba(196,137,43,.8), 0 0 20px rgba(196,137,43,.4);
+"></div>
 <!-- ══ NAV ══════════════════════════════════════════════ -->
 <nav id="nav">
   <a href="#hero" class="logo">GIC <span>SE-NA'A</span></a>
@@ -46,6 +58,7 @@
     <li><a href="#quiz">Quiz</a></li>
     <li><a href="#miss">Mission</a></li>
     <li><a href="#gal">Galerie</a></li>
+<li><a href="#faq">FAQ</a></li>
     <li><a href="#loc">Localisation</a></li>
     <li><a href="#ct" class="ncta">Contact</a></li>
   </ul>
@@ -303,6 +316,27 @@
     </div>
   </div>
 </section>
+
+<!-- FAQ -->
+<section id="faq" class="sec motif-bamileke">
+  <div class="w">
+    <span class="ey rv">Questions Fréquentes</span>
+    <h2 class="h2 rv d1">Tout ce que vous<br>voulez savoir</h2>
+    <div class="faq-filters rv d2">
+      <button class="faqbtn on" data-f="all">Toutes</button>
+      <button class="faqbtn" data-f="investissement">Investissement</button>
+      <button class="faqbtn" data-f="visite">Visite</button>
+      <button class="faqbtn" data-f="achat">Achat bétail</button>
+      <button class="faqbtn" data-f="general">Général</button>
+    </div>
+    <div class="faq-grid" id="faq-grid">
+      <!-- Chargé depuis Google Sheets -->
+      <div class="faq-loading">Chargement des questions…</div>
+    </div>
+  </div>
+</section>
+
+
 
 <!-- ══ FEEDBACK ═════════════════════════════════════════════ -->
 <section id="fb" class="sec motif-bamoun">

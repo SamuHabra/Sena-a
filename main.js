@@ -256,6 +256,7 @@ async function loadDynamicContent() {
 
     if (data.temoignages) renderTemoignages(data.temoignages);
     if (data.blog) renderBlog(data.blog);
+    if (data.faq) renderFaq(data.faq);
   } catch (err) {
     console.log('Contenu statique affiché');
   }
@@ -399,3 +400,63 @@ window.addEventListener('load', () => {
 
   setTimeout(() => runLine(0), 600);
 });
+
+
+/* ── FAQ ── */
+function renderFaq(items) {
+  const grid = document.getElementById('faq-grid');
+  if (!grid) return;
+
+  if (!items.length) {
+    grid.innerHTML = '<div class="faq-loading">Aucune question disponible.</div>';
+    return;
+  }
+
+  grid.innerHTML = items.map((f, i) => `
+    <div class="faq-item rv" data-c="${f.categorie}" style="transition-delay:${i * .08}s">
+      <span class="faq-cat">${f.categorie}</span>
+      <button class="faq-q" aria-expanded="false">
+        <span class="faq-q-text">${f.question}</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a"><p>${f.reponse}</p></div>
+    </div>
+  `).join('');
+
+  // Accordion
+  grid.querySelectorAll('.faq-q').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      // Fermer tous
+      grid.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      // Ouvrir celui cliqué
+      if (!isOpen) item.classList.add('open');
+      btn.setAttribute('aria-expanded', !isOpen);
+    });
+  });
+
+  // Filtres
+  document.querySelectorAll('.faqbtn').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.faqbtn').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+      const f = b.dataset.f;
+      grid.querySelectorAll('.faq-item').forEach(item =>
+        item.classList.toggle('hid', f !== 'all' && item.dataset.c !== f)
+      );
+    });
+  });
+
+  // Reveal
+  grid.querySelectorAll('.rv').forEach(el => robs.observe(el));
+}
+
+/* ── BARRE DE PROGRESSION ── */
+const progressBar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const scrollTop    = window.scrollY;
+  const docHeight    = document.documentElement.scrollHeight - window.innerHeight;
+  const scrolled     = (scrollTop / docHeight) * 100;
+  progressBar.style.width = scrolled + '%';
+}, { passive: true });
