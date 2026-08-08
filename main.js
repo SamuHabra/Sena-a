@@ -473,3 +473,95 @@ glowCards.forEach(card => {
     card.style.setProperty('--mouse-y', y);
   });
 });
+
+
+/* ── BLOG ARTICLES EXTERNES ── */
+async function loadBlogArticles() {
+  try {
+    const res  = await fetch('/.netlify/functions/blog-articles');
+    const data = await res.json();
+    if (!data.articles || !data.articles.length) return;
+
+    const grid = document.querySelector('.bgrid');
+    if (!grid) return;
+
+    const photos = [
+      'images/hero.webp','images/troupeau.webp',
+      'images/equipe-sena.webp','images/equipe-terrain.webp',
+      'images/veau.webp','images/veau-soleil.webp'
+    ];
+
+    grid.innerHTML = data.articles.map((a, i) => `
+      <article class="bc" style="cursor:pointer"
+        data-titre="${(a.titre||'').replace(/"/g,'&quot;')}"
+        data-resume="${(a.resume||'').replace(/"/g,'&quot;')}"
+        data-image="${a.image || photos[i % photos.length]}"
+        data-url="${a.url || '#'}"
+        data-source="${a.source || 'GIC SE-NA\'A'}"
+        data-date="${a.date || ''}">
+        <div class="bt" style="position:relative;height:185px;overflow:hidden;">
+          <img src="${a.image || photos[i % photos.length]}"
+               alt="${a.titre}"
+               loading="lazy"
+               onerror="this.src='${photos[i % photos.length]}'"
+               style="width:100%;height:100%;object-fit:cover;display:block;">
+          <span class="bcat">Élevage</span>
+        </div>
+        <div class="bb">
+          <h4>${a.titre}</h4>
+          <p>${(a.resume || '').substring(0, 100)}…</p>
+          <div class="bmeta">
+            <span>🗓 ${a.date}</span>
+            <span>📰 ${a.source}</span>
+          </div>
+          <span class="brd">Lire l'article →</span>
+        </div>
+      </article>
+    `).join('');
+
+    // Ouvrir modal au clic
+    grid.querySelectorAll('.bc').forEach(card => {
+      card.addEventListener('click', () => openBlogModal(card.dataset));
+    });
+
+  } catch(err) {
+    console.log('Articles externes non disponibles');
+  }
+}
+
+/* ── MODAL BLOG ── */
+function openBlogModal(d) {
+  document.getElementById('bmi').src        = d.image || '';
+  document.getElementById('bm-titre').textContent  = d.titre || '';
+  document.getElementById('bm-resume').textContent = d.resume || '';
+  document.getElementById('bm-source').textContent = d.source || '';
+  document.getElementById('bm-lire').href   = d.url || '#';
+  document.getElementById('bm-wa').href     =
+    `https://wa.me/?text=${encodeURIComponent(d.titre + ' ' + d.url)}`;
+
+  const modal = document.getElementById('blog-modal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+document.getElementById('blog-modal-close').addEventListener('click', () => {
+  document.getElementById('blog-modal').style.display = 'none';
+  document.body.style.overflow = '';
+});
+
+document.getElementById('blog-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) {
+    e.currentTarget.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('blog-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+});
+
+// Lancer au chargement
+loadBlogArticles();
