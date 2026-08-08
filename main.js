@@ -460,3 +460,16 @@ window.addEventListener('scroll', () => {
   const scrolled     = (scrollTop / docHeight) * 100;
   progressBar.style.width = scrolled + '%';
 }, { passive: true });
+
+/* ══ EFFET LUMIÈRE CURSEUR ══════════════════════════════════ */
+const glowCards = document.querySelectorAll('.pc,.mvc,.ec,.bc,.fc,.eqcard');
+
+glowCards.forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width  * 100).toFixed(1) + '%';
+    const y = ((e.clientY - rect.top)  / rect.height * 100).toFixed(1) + '%';
+    card.style.setProperty('--mouse-x', x);
+    card.style.setProperty('--mouse-y', y);
+  });
+});
