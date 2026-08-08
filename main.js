@@ -379,15 +379,23 @@ window.addEventListener('load', () => {
   const lines = document.querySelectorAll('.tw-line');
   if (!lines.length) return;
 
-  const texts = [...lines].map(line => line.dataset.text || '');
+  // Rendre le titre visible d'abord
+  const titre = document.querySelector('.ht');
+  if(titre) {
+    titre.style.opacity = '1';
+    titre.style.animation = 'none';
+  }
+
+  const texts = [...lines].map(l => l.dataset.text || '');
   const speeds = [55, 65, 50];
 
   function runLine(index) {
     if (index >= lines.length) return;
+    lines[index].style.opacity = '1';
     typeWriter(lines[index], texts[index], speeds[index], () => {
       setTimeout(() => runLine(index + 1), 200);
     });
   }
 
-  setTimeout(() => runLine(0), 100);
+  setTimeout(() => runLine(0), 600);
 });
